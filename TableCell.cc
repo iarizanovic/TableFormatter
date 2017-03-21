@@ -3,46 +3,63 @@
 std::vector<std::string> TableCell::ColorVector;
 
 TableCell::TableCell(int value, TableFormatterColor col)
-: doubleValue(0.f), color(col), llValue((long long)value), strValue(""),
+: doubleValue(0.f),
+color(col),
+llValue((long long)value),
+strValue(""),
 selectedValue(TypeContainingValue::LLONG)
 {
   Init();
 }
 
 TableCell::TableCell(float value, TableFormatterColor col)
-: doubleValue(value), color(col), llValue(0), strValue(""),
+: doubleValue(value),
+color(col),
+llValue(0),
+strValue(""),
 selectedValue(TypeContainingValue::DOUBLE)
 {
   Init();
 }
 
-
 TableCell::TableCell(double value, TableFormatterColor col)
-: doubleValue(value), color(col), llValue(0), strValue(""),
+: doubleValue(value),
+color(col),
+llValue(0),
+strValue(""),
 selectedValue(TypeContainingValue::DOUBLE)
 {
   Init();
 }
 
 TableCell::TableCell(long long value, TableFormatterColor col)
-: doubleValue(0.f), color(col), llValue(value), strValue(""),
+: doubleValue(0.f),
+color(col),
+llValue(value),
+strValue(""),
 selectedValue(TypeContainingValue::LLONG)
 {
   Init();
 }
 
 TableCell::TableCell(std::string& value, TableFormatterColor col)
-: doubleValue(0.f), color(col), llValue(0), strValue(value),
+: doubleValue(0.f),
+color(col),
+llValue(0),
+strValue(value),
 selectedValue(TypeContainingValue::STRING)
 {
   Init();
 }
 
-TableCell::TableCell(const char* val, TableFormatterColor col)
-: doubleValue(0.f), color(col), llValue(0), strValue(val),
+TableCell::TableCell(const char* value, TableFormatterColor col)
+: doubleValue(0.f),
+color(col),
+llValue(0),
+strValue(value),
 selectedValue(TypeContainingValue::STRING)
 {
-
+  Init();
 }
 
 
@@ -73,44 +90,40 @@ void TableCell::Init()
 {
   if(ColorVector.empty())
     ColorVector =
-    std::vector<std::string> { "\33[0m", "\33[31m", "\33[32m", "\33[33m"};
+    std::vector<std::string> { "\33[0m", "\33[31m", "\33[32m", "\33[33m", "\33[34m"};
 }
 
 
-void TableCell::SetValue(double val)
+void TableCell::SetValue(double value)
 {
   if(selectedValue == TypeContainingValue::DOUBLE){
-    doubleValue =  val;
+    doubleValue =  value;
   }
 }
 
-void TableCell::SetValue(long long int val)
+void TableCell::SetValue(long long int value)
 {
   if(selectedValue == TypeContainingValue::LLONG){
-    llValue =  val;
+    llValue =  value;
   }
 }
 
-void TableCell::SetValue(std::string& val)
+void TableCell::SetValue(std::string& value)
 {
   if(selectedValue == TypeContainingValue::STRING){
-    strValue =  val;
+    strValue =  value;
   }
 }
 
 void TableCell::Print(std::ostream& ostream, size_t width) const
 {
+  ostream.fill(' ');
   if(width){
     // because of escape characters
     if(color == TableFormatterColor::DEFAULT)
-      ostream.width(width+3);
-    if(color ==TableFormatterColor::RED)
       ostream.width(width+4);
-    if(color==TableFormatterColor::GREEN)
-      ostream.width(width+1);
-    if(color == TableFormatterColor::YELLOW)
-      ostream.width(width+1);
-    ostream.fill(' ');
+    else
+      ostream.width(width+5);
   }
 
   ostream << ColorVector[color];
@@ -130,14 +143,13 @@ std::ostream& operator<<(std::ostream& stream, const TableCell& cell)
   return stream;
 }
 
-TableCell::operator int() const {
-  if(this->selectedValue == TypeContainingValue::LLONG){
+TableCell::operator int() const{
+  if(this->selectedValue == TypeContainingValue::LLONG)
     return (int) llValue;
-  }
 
-  if(this->selectedValue == TypeContainingValue::DOUBLE){
+  if(this->selectedValue == TypeContainingValue::DOUBLE)
     return (int) doubleValue;
-  }
+
   throw std::bad_cast();
 }
 
@@ -178,6 +190,10 @@ TableCell::operator std::string() const{
   throw std::bad_cast();
 }
 
+
+/*
+ * Calculating print width of tablecell.
+ */
 size_t TableCell::Length()
 {
   size_t ret = 0;
@@ -196,18 +212,13 @@ size_t TableCell::Length()
 
   // Get length of double value
   if(selectedValue == TypeContainingValue::DOUBLE){
-    double temp = llValue;
-    while(temp > 1){
-      ++ret;
-      temp /= 10;
-    }
-    // Add three additional spaces for decimal numbers (. and two numbers)
-    ret += 3;
+    std::stringstream temp;
+    temp << doubleValue;
+    ret = temp.str().length();
   }
 
-  // If ret value is not zero, add two more spaces for padding
   // Otherwise return 0, in case of unrecognized type.
-  return ret ? ret + 2 : 0;
+  return ret ? ret : 0;
 }
 
 

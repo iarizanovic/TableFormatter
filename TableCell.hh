@@ -4,6 +4,7 @@
 #include "TableFormatting.h"
 
 class TableCell {
+protected:
   // Store value for cell, three type values
   double doubleValue;
   long long llValue;
@@ -32,9 +33,9 @@ public:
   TableCell(int value, TableFormatterColor col = TableFormatterColor::DEFAULT);
   TableCell(float value, TableFormatterColor col = TableFormatterColor::DEFAULT);
   TableCell(double value, TableFormatterColor col = TableFormatterColor::DEFAULT);
-  TableCell(long long, TableFormatterColor col = TableFormatterColor::DEFAULT);
-  TableCell(std::string&, TableFormatterColor col = TableFormatterColor::DEFAULT);
-  TableCell(const char* val, TableFormatterColor col = TableFormatterColor::DEFAULT);
+  TableCell(long long value, TableFormatterColor col = TableFormatterColor::DEFAULT);
+  TableCell(std::string& value, TableFormatterColor col = TableFormatterColor::DEFAULT);
+  TableCell(const char* value, TableFormatterColor col = TableFormatterColor::DEFAULT);
   TableCell(const TableCell& cell);
 
   // Operators
@@ -47,9 +48,9 @@ public:
 
   // Setting values, implementled with guards, preventing one Cell to have
   // any other value than initially set.
-  void SetValue(double val);
-  void SetValue(long long val);
-  void SetValue(std::string& val);
+  void SetValue(double value);
+  void SetValue(long long value);
+  void SetValue(std::string& value);
 
   // Setting color
   inline void SetColor(TableFormatterColor& col) { color = col; }
